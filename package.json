@@ -21,6 +21,7 @@
     "wagmi": "^2.19.5"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.15.8",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
