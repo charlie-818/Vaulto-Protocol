@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { WaitlistScreen } from "@/components/WaitlistScreen";
 
 export default function Home() {
-  redirect("/swap");
+  return <WaitlistScreen />;
 }
