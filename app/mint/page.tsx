@@ -22,7 +22,7 @@ export default async function MintPage() {
       </p>
 
       {/* Summary Stats */}
-      <div className="mt-4 grid grid-cols-3 gap-4">
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-md border border-border bg-muted/30 px-4 py-3">
           <p className="text-sm text-muted">Companies</p>
           <p className="mt-1 text-xl font-medium">{metrics.companyCount}</p>
@@ -41,8 +41,56 @@ export default async function MintPage() {
         </div>
       </div>
 
-      {/* Companies Table */}
-      <div className="mt-8 overflow-x-auto border border-border rounded-md">
+      {/* Companies: mobile cards */}
+      <div className="mt-8 flex flex-col gap-3 md:hidden">
+        {companies.map((company) => {
+          const syntheticSymbol = getSyntheticSymbol(company.name);
+          return (
+            <div
+              key={company.id}
+              className="rounded-md border border-border bg-background p-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <CompanyLogo name={company.name} website={company.website} size={40} />
+                  <div className="min-w-0">
+                    <p className="font-medium">{company.name}</p>
+                    <p className="text-xs text-muted">{company.ceo}</p>
+                    <p className="mt-1 text-xs text-muted">{company.industry}</p>
+                  </div>
+                </div>
+                <span className="shrink-0 rounded-full bg-muted/50 px-2 py-0.5 text-xs font-medium">
+                  {syntheticSymbol}
+                </span>
+              </div>
+              <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                <div>
+                  <dt className="text-muted">Valuation</dt>
+                  <dd>{formatValuation(company.valuationUsd)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">Funding</dt>
+                  <dd>{formatValuation(company.totalFundingUsd)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">Price/Share</dt>
+                  <dd>{formatPricePerShare(company.lastFundingEstPricePerShareUsd)}</dd>
+                </div>
+              </dl>
+              <div className="mt-3 pt-3 border-t border-border">
+                <MintWidget
+                  companyName={company.name}
+                  syntheticSymbol={syntheticSymbol}
+                  valuationUsd={company.valuationUsd}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Companies Table (desktop) */}
+      <div className="mt-8 hidden overflow-x-auto border border-border rounded-md md:block">
         <table className="w-full min-w-[48rem] text-left text-sm">
           <thead>
             <tr className="border-b border-border">

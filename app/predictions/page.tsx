@@ -17,7 +17,7 @@ export default async function PredictionsPage() {
       </p>
 
       {/* Summary Stats */}
-      <div className="mt-4 grid grid-cols-3 gap-4">
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-md border border-border bg-muted/30 px-4 py-3">
           <p className="text-sm text-muted">Companies</p>
           <p className="mt-1 text-xl font-medium">{ipos.length}</p>

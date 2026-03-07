@@ -34,7 +34,7 @@ export default function RootLayout({
             <ThemeSwitch />
             <ConnectWalletButton />
           </header>
-          <main className="ml-48 min-h-screen p-8">{children}</main>
+          <main className="ml-0 min-h-screen p-8 pt-24 md:ml-48 md:pt-8">{children}</main>
         </Providers>
       </body>
     </html>

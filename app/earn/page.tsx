@@ -103,7 +103,7 @@ export default async function EarnPage() {
       </p>
 
       {/* Summary Cards */}
-      <div className="mt-8 grid grid-cols-3 gap-4">
+      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-border bg-background p-5 text-center">
           <p className="text-sm text-muted">Total TVL</p>
           <p className="mt-1 text-xl font-semibold">{formatUSD(totalTVL)}</p>
@@ -119,7 +119,7 @@ export default async function EarnPage() {
       </div>
 
       {/* Additional Stats */}
-      <div className="mt-4 grid grid-cols-2 gap-4">
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-lg border border-border bg-background p-4">
           <p className="text-sm text-muted">Active Pools</p>
           <p className="mt-1 text-lg font-semibold">{pools.length}</p>
@@ -132,8 +132,58 @@ export default async function EarnPage() {
         </div>
       </div>
 
-      {/* Pools Table */}
-      <div className="mt-8 overflow-x-auto border border-border rounded-md">
+      {/* Pools: mobile cards */}
+      <div className="mt-8 flex flex-col gap-3 md:hidden">
+        {pools.map((pool) => (
+          <div
+            key={pool.company.id}
+            className="rounded-md border border-border bg-background p-4"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex min-w-0 items-center gap-2">
+                <div className="flex -space-x-1 shrink-0">
+                  {[pool.symbol, "USDC"].map((symbol) => (
+                    <TokenLogo key={symbol} symbol={symbol} size={28} className="ring-2 ring-background" />
+                  ))}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium">{pool.poolName}</p>
+                  <IndustryBadge industry={pool.company.industry} />
+                </div>
+              </div>
+              <span className="shrink-0 text-right font-medium text-green-500">
+                {formatPercent(pool.apr)}
+              </span>
+            </div>
+            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+              <div>
+                <dt className="text-muted">Valuation</dt>
+                <dd>{formatValuation(pool.company.valuationUsd)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted">TVL</dt>
+                <dd>{formatUSD(pool.tvlUSD)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted">Volume (24h)</dt>
+                <dd>{formatUSD(pool.volume24h)}</dd>
+              </div>
+            </dl>
+            <div className="mt-3 pt-3 border-t border-border">
+              <button
+                className="w-full rounded border border-border bg-white py-2 text-sm font-medium text-black hover:bg-white/90 disabled:opacity-50"
+                disabled
+                title="Coming soon"
+              >
+                Add LP
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Pools Table (desktop) */}
+      <div className="mt-8 hidden overflow-x-auto border border-border rounded-md md:block">
         <table className="w-full min-w-[48rem] text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/30">

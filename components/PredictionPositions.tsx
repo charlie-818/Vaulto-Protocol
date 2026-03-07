@@ -45,7 +45,65 @@ export function PredictionPositions({ markets }: PositionsProps) {
   return (
     <div className="mt-6">
       <h2 className="text-lg font-medium">Your Positions</h2>
-      <div className="mt-3 overflow-x-auto border border-border rounded-md">
+
+      {/* Mobile cards */}
+      <div className="mt-3 flex flex-col gap-3 md:hidden">
+        {positions.map((position) => {
+          const currentValue = calculatePositionValue(position.shares, position.currentPrice);
+          const potentialPayout = position.shares;
+          return (
+            <div
+              key={position.symbol}
+              className="rounded-md border border-border bg-background p-4"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-medium text-sm line-clamp-2">{position.question}</p>
+                  <p className="text-xs text-muted">{position.symbol}</p>
+                </div>
+                <span
+                  className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                    position.outcome === "Yes"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
+                      : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300"
+                  }`}
+                >
+                  {position.outcome}
+                </span>
+              </div>
+              <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                <div>
+                  <dt className="text-muted">Shares</dt>
+                  <dd>{position.shares.toFixed(2)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">Current Value</dt>
+                  <dd>${currentValue.toFixed(2)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">Potential Payout</dt>
+                  <dd className="text-green-600 dark:text-green-400 font-medium">
+                    ${potentialPayout.toFixed(2)}
+                  </dd>
+                </div>
+              </dl>
+              <div className="mt-3 pt-3 border-t border-border">
+                <button
+                  type="button"
+                  onClick={() => handleSell(position)}
+                  disabled={selling === position.symbol}
+                  className="w-full rounded border border-red-300 bg-red-50 py-2 text-sm font-medium text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/50 disabled:opacity-50"
+                >
+                  {selling === position.symbol ? "Selling..." : "Sell"}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop table */}
+      <div className="mt-3 hidden overflow-x-auto border border-border rounded-md md:block">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border">

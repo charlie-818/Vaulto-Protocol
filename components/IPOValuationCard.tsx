@@ -24,31 +24,34 @@ function ValuationBandRow({
   const probabilityText = `${(band.probability * 100).toFixed(1)}%`;
 
   return (
-    <div className="flex items-center gap-3 py-2">
-      {/* Range label */}
-      <span className="w-28 text-sm font-medium text-foreground" title={band.question}>
+    <div className="flex items-center gap-2 py-2 sm:gap-3">
+      {/* Range label - fixed width so all bars align on the same vertical axis */}
+      <span
+        className="w-[7rem] shrink-0 overflow-hidden text-ellipsis whitespace-nowrap text-xs font-medium text-foreground sm:text-sm"
+        title={band.question}
+      >
         {formatBandRange(band)}
       </span>
 
-      {/* Probability bar */}
-      <div className="flex-1 flex items-center gap-2">
-        <div className="relative flex-1 h-6 rounded-full bg-muted/50 overflow-hidden">
+      {/* Probability bar - less rounding, mobile-optimized */}
+      <div className="min-w-0 flex-1 flex items-center">
+        <div className="relative flex-1 h-7 min-w-[3rem] rounded-sm bg-muted/50 overflow-hidden sm:h-6 sm:min-w-[4rem] sm:rounded">
           <div
-            className={`absolute inset-y-0 left-0 rounded-full transition-all ${
+            className={`absolute inset-y-0 left-0 rounded-sm transition-all sm:rounded ${
               band.probability >= 0.10
                 ? "bg-green-500/80"
                 : "bg-red-500/80"
             }`}
             style={{ width: `${percentWidth}%` }}
           />
-          <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-foreground">
+          <span className="absolute inset-0 flex items-center justify-end pr-2 text-xs font-medium text-foreground">
             {probabilityText}
           </span>
         </div>
       </div>
 
-      {/* Trade buttons */}
-      <div className="flex gap-2">
+      {/* Trade buttons - hidden on mobile */}
+      <div className="hidden shrink-0 gap-2 sm:flex">
         <button
           type="button"
           onClick={() => onTrade("long")}
@@ -103,7 +106,7 @@ export function IPOValuationCard({ ipo, onTrade }: IPOValuationCardProps) {
       </div>
 
       {/* Valuation Summary */}
-      <div className="px-4 py-3 grid grid-cols-2 gap-4 border-b border-border bg-muted/10">
+      <div className="px-4 py-3 grid grid-cols-1 gap-4 border-b border-border bg-muted/10 sm:grid-cols-2">
         <div>
           <p className="text-xs text-muted uppercase tracking-wide">Expected IPO Value</p>
           <p className="mt-0.5 text-xl font-semibold text-blue-600 dark:text-blue-400">
@@ -138,8 +141,8 @@ export function IPOValuationCard({ ipo, onTrade }: IPOValuationCardProps) {
           ))}
         </div>
 
-        {/* Legend */}
-        <div className="mt-3 pt-3 border-t border-border flex items-center justify-end gap-4 text-xs text-muted">
+        {/* Legend - hidden on mobile when Yes/No buttons are hidden */}
+        <div className="mt-3 pt-3 border-t border-border hidden flex-wrap items-center justify-end gap-3 text-xs text-muted sm:flex">
           <span className="flex items-center gap-1">
             <span className="w-3 h-3 rounded bg-green-500/80" />
             Yes = IPO lands here
