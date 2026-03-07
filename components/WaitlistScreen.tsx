@@ -71,26 +71,21 @@ export function WaitlistScreen() {
         </div>
 
         {/* Tagline */}
-        <h1 className="animate-fade-in-up animation-delay-200 mb-4 text-4xl font-light tracking-tight text-[var(--foreground)] sm:text-5xl md:text-6xl">
+        <h1 className="animate-fade-in-up animation-delay-200 mb-1 text-4xl font-light tracking-tight text-[var(--foreground)] sm:text-5xl md:text-6xl">
           The Future of
         </h1>
         <h1 className="animate-fade-in-up animation-delay-300 mb-12 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 bg-clip-text text-4xl font-semibold tracking-tight text-transparent sm:text-5xl md:text-6xl">
           Private Investing
         </h1>
 
-        {/* Subtle animated line */}
-        <div className="animate-fade-in-up animation-delay-400 mb-12 h-px w-32 overflow-hidden bg-[var(--border)]">
-          <div className="animate-shimmer h-full w-full bg-gradient-to-r from-transparent via-[var(--foreground)] to-transparent opacity-50" />
-        </div>
-
         {/* Google Sign Up Button */}
         <button
           onClick={handleGoogleSignUp}
-          className="animate-fade-in-up animation-delay-500 group relative flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--background)] px-8 py-4 text-[var(--foreground)] transition-all duration-300 hover:border-[var(--foreground)]/20 hover:shadow-lg hover:shadow-purple-500/10"
+          className="animate-fade-in-up animation-delay-500 group relative flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--background)] px-5 py-2.5 text-sm text-[var(--foreground)] transition-all duration-300 hover:border-[var(--foreground)]/20 hover:shadow-lg hover:shadow-purple-500/10"
         >
           {/* Google Icon */}
           <svg
-            className="h-5 w-5"
+            className="h-4 w-4"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
@@ -114,13 +109,18 @@ export function WaitlistScreen() {
           <span className="font-medium">Sign up with Google</span>
 
           {/* Hover glow effect */}
-          <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-cyan-500/0 opacity-0 blur-xl transition-opacity duration-300 group-hover:from-blue-500/20 group-hover:via-purple-500/20 group-hover:to-cyan-500/20 group-hover:opacity-100" />
+          <div className="absolute inset-0 -z-10 rounded-lg bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-cyan-500/0 opacity-0 blur-xl transition-opacity duration-300 group-hover:from-blue-500/20 group-hover:via-purple-500/20 group-hover:to-cyan-500/20 group-hover:opacity-100" />
         </button>
 
         {/* Subtle hint text */}
         <p className="animate-fade-in-up animation-delay-600 mt-6 text-sm text-[var(--muted)]">
           Join the waitlist for early access
         </p>
+
+        {/* Subtle animated line */}
+        <div className="animate-fade-in-up animation-delay-600 mt-6 h-px w-32 overflow-hidden bg-[var(--border)]">
+          <div className="animate-shimmer h-full w-full bg-gradient-to-r from-transparent via-[var(--foreground)] to-transparent opacity-50" />
+        </div>
       </div>
 
       {/* Bottom corner accent */}
