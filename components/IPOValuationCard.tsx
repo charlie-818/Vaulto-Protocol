@@ -10,15 +10,12 @@ import {
 
 type IPOValuationCardProps = {
   ipo: CompanyIPO;
-  onTrade: (ipo: CompanyIPO, band: ValuationBand, direction: "long" | "short") => void;
 };
 
 function ValuationBandRow({
   band,
-  onTrade,
 }: {
   band: ValuationBand;
-  onTrade: (direction: "long" | "short") => void;
 }) {
   const percentWidth = Math.min(100, Math.max(2, Math.round(band.probability * 100)));
   const probabilityText = `${(band.probability * 100).toFixed(1)}%`;
@@ -50,30 +47,11 @@ function ValuationBandRow({
         </div>
       </div>
 
-      {/* Trade buttons - hidden on mobile */}
-      <div className="hidden shrink-0 gap-2 sm:flex">
-        <button
-          type="button"
-          onClick={() => onTrade("long")}
-          className="px-3 py-1 text-xs font-medium rounded border border-green-500 bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50"
-          title="Bet Yes - IPO lands in this range"
-        >
-          Yes
-        </button>
-        <button
-          type="button"
-          onClick={() => onTrade("short")}
-          className="px-3 py-1 text-xs font-medium rounded border border-red-500 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
-          title="Bet No - IPO does NOT land in this range"
-        >
-          No
-        </button>
-      </div>
     </div>
   );
 }
 
-export function IPOValuationCard({ ipo, onTrade }: IPOValuationCardProps) {
+export function IPOValuationCard({ ipo }: IPOValuationCardProps) {
   const sortedBands = [...ipo.bands].sort((a, b) => (a.lowThreshold ?? 0) - (b.lowThreshold ?? 0));
   const eventUrl = getPolymarketEventUrl(ipo.eventSlug);
 
@@ -136,22 +114,10 @@ export function IPOValuationCard({ ipo, onTrade }: IPOValuationCardProps) {
             <ValuationBandRow
               key={band.marketId}
               band={band}
-              onTrade={(direction) => onTrade(ipo, band, direction)}
             />
           ))}
         </div>
 
-        {/* Legend - hidden on mobile when Yes/No buttons are hidden */}
-        <div className="mt-3 pt-3 border-t border-border hidden flex-wrap items-center justify-end gap-3 text-xs text-muted sm:flex">
-          <span className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded bg-green-500/80" />
-            Yes = IPO lands here
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded bg-red-500/80" />
-            No = IPO doesn&apos;t land here
-          </span>
-        </div>
       </div>
     </div>
   );
