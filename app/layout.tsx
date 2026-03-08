@@ -42,7 +42,7 @@ export default function RootLayout({
               <ThemeSwitch />
               <ConnectWalletButton />
             </header>
-            <main className="ml-0 flex-1 p-8 pt-24 md:ml-48 md:pt-8">{children}</main>
+            <main className="ml-0 flex-1 p-8 pt-28 md:ml-48 md:pt-14">{children}</main>
             <div className="md:ml-48">
               <Footer />
             </div>
