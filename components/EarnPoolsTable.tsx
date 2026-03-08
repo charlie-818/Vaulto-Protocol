@@ -24,14 +24,18 @@ type EarnPoolsTableProps = {
 type ColumnKey = "pool" | "industry" | "valuation" | "tvl" | "volume" | "apr";
 
 function PoolCell({ pool }: { pool: StockPool }) {
-  const tokens = [pool.symbol, "USDC"];
   return (
     <td className="py-3 px-4">
       <div className="flex items-center gap-2 whitespace-nowrap">
         <div className="flex -space-x-1 shrink-0">
-          {tokens.map((symbol) => (
-            <TokenLogo key={symbol} symbol={symbol} size={24} className="ring-2 ring-background" />
-          ))}
+          <TokenLogo
+            symbol={pool.symbol}
+            companyName={pool.company.name}
+            companyWebsite={pool.company.website}
+            size={24}
+            className="ring-2 ring-background"
+          />
+          <TokenLogo symbol="USDC" size={24} className="ring-2 ring-background" />
         </div>
         <span>{pool.poolName}</span>
       </div>
@@ -74,9 +78,14 @@ export function EarnPoolsTable({ pools }: EarnPoolsTableProps) {
             <div className="flex items-center justify-between gap-2">
               <div className="flex min-w-0 items-center gap-2">
                 <div className="flex -space-x-1 shrink-0">
-                  {[pool.symbol, "USDC"].map((symbol) => (
-                    <TokenLogo key={symbol} symbol={symbol} size={28} className="ring-2 ring-background" />
-                  ))}
+                  <TokenLogo
+                    symbol={pool.symbol}
+                    companyName={pool.company.name}
+                    companyWebsite={pool.company.website}
+                    size={28}
+                    className="ring-2 ring-background"
+                  />
+                  <TokenLogo symbol="USDC" size={28} className="ring-2 ring-background" />
                 </div>
                 <div className="min-w-0">
                   <p className="font-medium">{pool.poolName}</p>

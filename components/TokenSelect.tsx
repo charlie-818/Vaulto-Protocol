@@ -75,7 +75,11 @@ export function TokenSelect({
       >
         {selected ? (
           <>
-            <TokenLogo symbol={selected.symbol} size={24} />
+            <TokenLogo
+              symbol={selected.symbol}
+              size={24}
+              companyName={selected.symbol.startsWith("v") ? selected.name : undefined}
+            />
             <span className="truncate text-left font-medium">{selected.name || selected.symbol}</span>
           </>
         ) : (
@@ -163,7 +167,7 @@ export function TokenSelect({
                           : "hover:bg-muted/60 text-foreground"
                       } ${token.symbol === value ? "bg-muted/40" : ""}`}
                     >
-                      <TokenLogo symbol={token.symbol} size={28} />
+                      <TokenLogo symbol={token.symbol} size={28} companyName={token.name} />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
                           <span className="truncate font-medium">{token.name}</span>

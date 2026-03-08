@@ -32,6 +32,9 @@ const COMPANY_DOMAIN_MAP: Record<string, string> = {
   chime: "chime.com",
   plaid: "plaid.com",
   ramp: "ramp.com",
+  tether: "tether.to",
+  revolut: "revolut.com",
+  kraken: "kraken.com",
   // Productivity
   figma: "figma.com",
   notion: "notion.so",
@@ -52,7 +55,9 @@ const COMPANY_DOMAIN_MAP: Record<string, string> = {
   scaleai: "scale.com",
   scale: "scale.com",
   shieldai: "shield.ai",
-  epirus: "epirus.com",
+  epirus: "epirusinc.com",
+  // Robotics
+  figureai: "figure.ai",
   // Space/Logistics
   relativityspace: "relativityspace.com",
   flexport: "flexport.com",
@@ -71,11 +76,14 @@ const COMPANY_DOMAIN_MAP: Record<string, string> = {
   freddiemac: "freddiemac.com",
   megaeth: "megaeth.systems",
   whoop: "whoop.com",
+  // Prediction markets
+  polymarket: "polymarket.com",
   // Sports/Entertainment
   fanatics: "fanatics.com",
-  fanaticsholdings: "fanatics.com",
+  fanaticsholdings: "fanaticsinc.com",
   // Fintech
   mercurytechnologies: "mercury.com",
+  mercury: "mercury.com",
   // AI
   thinkingmachineslab: "thinkingmachines.ai",
 };

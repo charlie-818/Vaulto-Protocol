@@ -41,7 +41,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed left-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-opacity hover:opacity-80 md:hidden"
+          className="fixed left-4 top-10 z-30 flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-opacity hover:opacity-80 md:hidden"
           aria-label="Open menu"
         >
           <HamburgerIcon />

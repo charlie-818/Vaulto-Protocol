@@ -358,3 +358,72 @@ model SumsubWebhook {
   @@index([eventType])
   @@index([receivedAt])
 }
+
+// ============================================
+// PRIVATE COMPANY MODELS (Migrated from Railway)
+// ============================================
+
+model PrivateCompany {
+  id                          Int               @id
+  name                        String            @unique
+  industry                    String
+  description                 String
+  website                     String
+
+  // Valuation data - BigInt for trillion-dollar valuations
+  valuationUsd                BigInt
+  valuationAsOf               DateTime
+  totalFundingUsd             BigInt
+
+  // Latest funding round info
+  lastFundingRoundType        String
+  lastFundingDate             DateTime
+  lastFundingEstPricePerShareUsd Decimal?       @db.Decimal(20, 4)
+
+  // Company info
+  employees                   Int
+  ceo                         String
+
+  // Relations
+  products                    CompanyProduct[]
+  fundingHistory              FundingRound[]
+
+  createdAt                   DateTime          @default(now())
+  updatedAt                   DateTime          @updatedAt
+
+  @@index([industry])
+  @@index([valuationUsd])
+}
+
+model CompanyProduct {
+  id                String          @id @default(cuid())
+  companyId         Int
+  company           PrivateCompany  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  name              String
+  description       String
+
+  createdAt         DateTime        @default(now())
+
+  @@index([companyId])
+}
+
+model FundingRound {
+  id                        String          @id @default(cuid())
+  companyId                 Int
+  company                   PrivateCompany  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  roundNumber               Int?
+  type                      String
+  date                      DateTime
+  amountRaisedUsd           BigInt?
+  amountRaisedNote          String?
+  preMoneyValuationUsd      BigInt?
+  postMoneyValuationUsd     BigInt?
+  pricePerShareUsd          Decimal?        @db.Decimal(20, 4)
+
+  createdAt                 DateTime        @default(now())
+
+  @@index([companyId])
+  @@index([date])
+}

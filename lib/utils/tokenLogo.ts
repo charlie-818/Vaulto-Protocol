@@ -54,6 +54,10 @@ export const PRIVATE_TOKEN_DOMAINS: Record<string, string> = {
   vKlarna: "klarna.com",
   vChime: "chime.com",
   vPlaid: "plaid.com",
+  vTether: "tether.to",
+  vRevolut: "revolut.com",
+  vKraken: "kraken.com",
+  vRamp: "ramp.com",
   // Productivity
   vFigma: "figma.com",
   vNotion: "notion.so",
@@ -73,6 +77,10 @@ export const PRIVATE_TOKEN_DOMAINS: Record<string, string> = {
   vAndurilIndustries: "anduril.com",
   vScale: "scale.com",
   vScaleAI: "scale.com",
+  vShieldAI: "shield.ai",
+  vEpirus: "epirusinc.com",
+  // Robotics
+  vFigureAI: "figure.ai",
   // Space/Logistics
   vRelativitySpace: "relativityspace.com",
   vFlexport: "flexport.com",
@@ -88,12 +96,19 @@ export const PRIVATE_TOKEN_DOMAINS: Record<string, string> = {
   vNeuralink: "neuralink.com",
   vKalshi: "kalshi.com",
   vPerplexity: "perplexity.ai",
+  vWhoop: "whoop.com",
+  // Prediction markets
+  vPolymarket: "polymarket.com",
   // Sports/Entertainment
-  vFanatics: "fanatics.com",
+  vFanatics: "fanaticsinc.com",
   // Fintech
   vMercury: "mercury.com",
+  vMercuryTechnologies: "mercury.com",
   // AI
   vTML: "thinkingmachines.ai",
+  vThinkingMachinesLab: "thinkingmachines.ai",
+  // Holding companies
+  vFanaticsHoldings: "fanaticsinc.com",
 };
 
 /**

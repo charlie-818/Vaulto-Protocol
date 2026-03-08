@@ -21,25 +21,13 @@ function createPrismaClient(): PrismaClient | null {
   }
 
   try {
-    if (databaseUrl.startsWith("prisma+postgres://")) {
-      // Using Prisma Postgres (Accelerate)
-      return new PrismaClient({
-        log:
-          process.env.NODE_ENV === "development"
-            ? ["query", "error", "warn"]
-            : ["error"],
-        accelerateUrl: databaseUrl,
-      } as never);
-    }
-
-    // Standard PostgreSQL connection
+    // Standard PostgreSQL connection - DATABASE_URL is read from env automatically
     return new PrismaClient({
       log:
         process.env.NODE_ENV === "development"
           ? ["query", "error", "warn"]
           : ["error"],
-      datasourceUrl: databaseUrl,
-    } as never);
+    });
   } catch (error) {
     console.error("Failed to create Prisma client:", error);
     globalForPrisma.prismaInitError = error as Error;

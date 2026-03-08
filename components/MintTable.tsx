@@ -52,23 +52,25 @@ export function MintTable({ companies }: MintTableProps) {
                   {syntheticSymbol}
                 </span>
               </div>
-              <div className="mt-3">
-                <Sparkline company={company} width={120} height={32} />
+              <div className="mt-2 flex items-end justify-between gap-4">
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                  <div>
+                    <dt className="text-muted">Valuation</dt>
+                    <dd>{formatValuation(company.valuationUsd)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted">Funding</dt>
+                    <dd>{formatValuation(company.totalFundingUsd)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted">Price/Share</dt>
+                    <dd>{formatPricePerShare(company.lastFundingEstPricePerShareUsd)}</dd>
+                  </div>
+                </dl>
+                <div className="shrink-0">
+                  <Sparkline company={company} width={80} height={28} />
+                </div>
               </div>
-              <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                <div>
-                  <dt className="text-muted">Valuation</dt>
-                  <dd>{formatValuation(company.valuationUsd)}</dd>
-                </div>
-                <div>
-                  <dt className="text-muted">Funding</dt>
-                  <dd>{formatValuation(company.totalFundingUsd)}</dd>
-                </div>
-                <div>
-                  <dt className="text-muted">Price/Share</dt>
-                  <dd>{formatPricePerShare(company.lastFundingEstPricePerShareUsd)}</dd>
-                </div>
-              </dl>
             </div>
           );
         })}

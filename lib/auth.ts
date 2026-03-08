@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { prisma, isDatabaseConfigured } from "@/lib/prisma";
+import { isDatabaseConfigured, prisma } from "@/lib/prisma";
 
 // Onboarding status type (defined locally to avoid import issues when DB not configured)
 type OnboardingStatus =
@@ -50,7 +50,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // Only try database operations if database is configured
       if (user.email && isDatabaseConfigured() && prisma) {
         try {
-          await prisma.user.upsert({
+          console.log("Attempting to save user to database...");
+          const savedUser = await prisma.user.upsert({
             where: { email: user.email },
             create: {
               email: user.email,
@@ -64,6 +65,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               isVaultoEmployee: user.email.endsWith("@vaulto.ai"),
             },
           });
+          console.log("User saved successfully:", savedUser.id);
         } catch (error) {
           console.error("Failed to upsert user:", error);
           // Don't block sign-in on database errors

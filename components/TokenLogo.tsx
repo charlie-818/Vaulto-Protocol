@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useTokenLogo } from "@/hooks/useTokenLogo";
-import { getTokenAddressBySymbol, getPrivateTokenLogoUrl, DARK_LOGO_SYMBOLS } from "@/lib/utils/tokenLogo";
+import { useCompanyLogo } from "@/hooks/useCompanyLogo";
+import { getTokenAddressBySymbol, DARK_LOGO_SYMBOLS } from "@/lib/utils/tokenLogo";
+import { DARK_LOGO_COMPANIES } from "@/lib/utils/companyLogo";
 
 type TokenLogoProps = {
   symbol: string;
@@ -10,6 +12,10 @@ type TokenLogoProps = {
   chainId?: number;
   size?: number;
   className?: string;
+  /** Company name for private tokens - enables company logo fetching */
+  companyName?: string;
+  /** Company website for private tokens - used for logo lookup */
+  companyWebsite?: string;
 };
 
 export function TokenLogo({
@@ -18,18 +24,28 @@ export function TokenLogo({
   chainId = 1,
   size = 24,
   className = "",
+  companyName,
+  companyWebsite,
 }: TokenLogoProps) {
-  // Check for private token logo first (symbols starting with "v" for private companies)
-  const privateLogoUrl = symbol?.startsWith("v") ? getPrivateTokenLogoUrl(symbol) : null;
+  const isPrivateToken = symbol?.startsWith("v") && symbol.length > 1;
+
+  // For private tokens with company info, use the company logo hook (same as MintTable)
+  const { logoUrl: companyLogoUrl, isLoading: companyLogoLoading } = useCompanyLogo(
+    isPrivateToken && companyName ? companyName : "",
+    companyWebsite
+  );
 
   const resolvedAddress = address ?? getTokenAddressBySymbol(symbol);
-  const { logoUrl: onchainLogoUrl, isLoading } = useTokenLogo(resolvedAddress, chainId);
+  const { logoUrl: onchainLogoUrl, isLoading: onchainLoading } = useTokenLogo(resolvedAddress, chainId);
   const [imgError, setImgError] = useState(false);
 
-  // Use private logo if available, otherwise fall back to on-chain logo
-  const logoUrl = privateLogoUrl || onchainLogoUrl;
-  const showFallback = (!privateLogoUrl && !resolvedAddress) || (!privateLogoUrl && isLoading) || !logoUrl || imgError;
-  const fallbackChar = symbol?.trim()[0]?.toUpperCase() ?? "?";
+  // For private tokens with company info, prefer company logo
+  // Otherwise fall back to on-chain token logo
+  const logoUrl = (isPrivateToken && companyName) ? companyLogoUrl : onchainLogoUrl;
+  const isLoading = (isPrivateToken && companyName) ? companyLogoLoading : onchainLoading;
+
+  const showFallback = isLoading || !logoUrl || imgError;
+  const fallbackChar = (companyName || symbol)?.trim()[0]?.toUpperCase() ?? "?";
 
   if (showFallback) {
     return (
@@ -43,8 +59,9 @@ export function TokenLogo({
     );
   }
 
-  // Check if this logo needs a white background (dark logos like Fnatic)
-  const needsWhiteBg = DARK_LOGO_SYMBOLS.has(symbol);
+  // Check if this logo needs a white background (dark logos)
+  const normalizedName = companyName?.toLowerCase().replace(/[^a-z0-9]/g, "") ?? "";
+  const needsWhiteBg = DARK_LOGO_SYMBOLS.has(symbol) || DARK_LOGO_COMPANIES.has(normalizedName);
 
   return (
     <img
