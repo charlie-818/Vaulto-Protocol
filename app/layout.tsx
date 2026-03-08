@@ -4,6 +4,7 @@ import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { ConnectWalletButton } from "@/components/ConnectWalletButton";
 import { Providers } from "@/components/Providers";
 import { Footer } from "@/components/Footer";
+import { GeoRestrictBanner } from "@/components/GeoRestrictBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body className="min-h-screen">
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Providers>
+          <GeoRestrictBanner />
           <div className="flex min-h-screen flex-col">
             <Sidebar />
             <header className="fixed right-0 top-0 z-20 flex items-center gap-3 pr-6 pt-6">
