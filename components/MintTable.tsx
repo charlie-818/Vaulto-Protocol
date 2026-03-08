@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import type { PrivateCompany } from "@/lib/vaulto/companies";
 import { formatValuation, formatPricePerShare, getSyntheticSymbol } from "@/lib/vaulto/companies";
 import { CompanyLogo } from "@/components/CompanyLogo";
+import { Sparkline } from "@/components/Sparkline";
 import { useSortableTable, type SortableColumn } from "@/hooks/useSortableTable";
 import { SortableTableHeader } from "@/components/SortableHeader";
 
@@ -50,7 +51,10 @@ export function MintTable({ companies }: MintTableProps) {
                   {syntheticSymbol}
                 </span>
               </div>
-              <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+              <div className="mt-3">
+                <Sparkline company={company} width={120} height={32} />
+              </div>
+              <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                 <div>
                   <dt className="text-muted">Valuation</dt>
                   <dd>{formatValuation(company.valuationUsd)}</dd>
@@ -89,6 +93,7 @@ export function MintTable({ companies }: MintTableProps) {
                 onSort={handleSort as (column: string) => void}
                 className="text-muted whitespace-nowrap"
               />
+              <th className="py-3 px-4 text-sm font-medium text-muted">Trend</th>
               <SortableTableHeader
                 label="Funding"
                 columnKey="funding"
@@ -134,6 +139,9 @@ export function MintTable({ companies }: MintTableProps) {
                   </td>
                   <td className="py-3 px-4 text-muted">
                     {formatValuation(company.valuationUsd)}
+                  </td>
+                  <td className="py-3 px-4">
+                    <Sparkline company={company} width={48} height={20} />
                   </td>
                   <td className="py-3 px-4 text-muted">
                     {formatValuation(company.totalFundingUsd)}
