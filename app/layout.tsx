@@ -38,7 +38,7 @@ export default function RootLayout({
           <GeoRestrictBanner />
           <div className="flex min-h-screen flex-col">
             <Sidebar />
-            <header className="fixed right-0 top-0 z-20 flex items-center gap-3 pr-6 pt-6">
+            <header className="fixed right-0 top-0 z-20 flex items-center gap-3 pr-6 pt-10">
               <ThemeSwitch />
               <ConnectWalletButton />
             </header>
