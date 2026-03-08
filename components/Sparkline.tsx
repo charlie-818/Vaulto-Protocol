@@ -136,6 +136,9 @@ function pointsToPolyline(
     .join(" ");
 }
 
+/** Minimum variation threshold (as percentage of max value) to show sparkline */
+const MIN_VARIATION_PERCENT = 0.15; // 15%
+
 /** Sparkline for a single company (y-scale: self min-max) */
 export function Sparkline({
   company,
@@ -146,10 +149,16 @@ export function Sparkline({
 }: SparklineProps) {
   const points = extractDataPoints(company.fundingHistory);
 
-  // No data: return null
-  if (points.length === 0) return null;
+  // No data or single point: return null
+  if (points.length <= 1) return null;
 
   const { min, max } = getMinMax(points);
+
+  // Skip if variation is too low (less than threshold % of max value)
+  const range = max - min;
+  const variationPercent = max > 0 ? range / max : 0;
+  if (variationPercent < MIN_VARIATION_PERCENT) return null;
+
   const polylinePoints = pointsToPolyline(
     points,
     width,

@@ -35,3 +35,8 @@ Thumbs.db
 # Testing
 coverage/
 .playwright-mcp/
+
+/lib/generated/prisma
+
+# Local Netlify folder
+.netlify

@@ -1,0 +1,360 @@
+// Prisma schema for Vaulto Protocol - Reg S Compliant Onboarding
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum OnboardingStatus {
+  NOT_STARTED
+  GEO_CHECK_PENDING
+  GEO_CHECK_PASSED
+  GEO_BLOCKED
+  KYC_PENDING
+  KYC_IN_REVIEW
+  KYC_APPROVED
+  KYC_REJECTED
+  WALLET_PENDING
+  WALLET_APPROVED
+  WALLET_REJECTED
+  SOURCE_OF_FUNDS_PENDING
+  SOURCE_OF_FUNDS_APPROVED
+  RISK_ACKNOWLEDGMENT_PENDING
+  COMPLIANCE_PERIOD_ACTIVE
+  FULLY_ONBOARDED
+  SUSPENDED
+}
+
+enum KycStatus {
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum WalletVerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  HIGH_RISK
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  SEVERE
+}
+
+enum AuditAction {
+  GEO_CHECK_INITIATED
+  GEO_CHECK_PASSED
+  GEO_CHECK_BLOCKED
+  KYC_INITIATED
+  KYC_SUBMITTED
+  KYC_APPROVED
+  KYC_REJECTED
+  KYC_EXPIRED
+  WALLET_CONNECTED
+  WALLET_VERIFIED
+  WALLET_REJECTED
+  SOURCE_OF_FUNDS_SUBMITTED
+  SOURCE_OF_FUNDS_APPROVED
+  RISK_ACKNOWLEDGMENT_SIGNED
+  COMPLIANCE_PERIOD_STARTED
+  COMPLIANCE_PERIOD_COMPLETED
+  ONBOARDING_COMPLETED
+  USER_SUSPENDED
+  USER_REINSTATED
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+model User {
+  id                    String              @id @default(cuid())
+  email                 String              @unique
+  name                  String?
+  image                 String?
+  onboardingStatus      OnboardingStatus    @default(NOT_STARTED)
+  isVaultoEmployee      Boolean             @default(false)
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  // Relations
+  geoVerifications      GeoVerification[]
+  kycVerification       KycVerification?
+  walletVerifications   WalletVerification[]
+  sourceOfFundsDeclaration SourceOfFundsDeclaration?
+  riskAcknowledgment    RiskAcknowledgment?
+  compliancePeriod      CompliancePeriod?
+  auditLogs             AuditLog[]
+
+  @@index([email])
+  @@index([onboardingStatus])
+}
+
+model GeoVerification {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  ipAddress         String
+  countryCode       String
+  countryName       String
+  city              String?
+  region            String?
+  isVpnDetected     Boolean   @default(false)
+  isProxyDetected   Boolean   @default(false)
+  isTorDetected     Boolean   @default(false)
+  isBlocked         Boolean   @default(false)
+  blockReason       String?
+
+  // User declaration
+  declaredNonUs     Boolean   @default(false)
+  declaredCountry   String?
+  declarationSignedAt DateTime?
+
+  verifiedAt        DateTime  @default(now())
+
+  // MaxMind response data (encrypted at rest in production)
+  rawResponseHash   String?
+
+  @@index([userId])
+  @@index([countryCode])
+  @@index([isBlocked])
+}
+
+model KycVerification {
+  id                String      @id @default(cuid())
+  userId            String      @unique
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Sumsub data
+  sumsubApplicantId String?     @unique
+  sumsubAccessToken String?     // Short-lived token for WebSDK
+  tokenExpiresAt    DateTime?
+
+  status            KycStatus   @default(PENDING)
+  reviewResult      String?     // JSON string with review details
+
+  // Document verification results (encrypted)
+  documentType      String?
+  documentCountry   String?
+  documentVerified  Boolean     @default(false)
+
+  // Liveness check
+  livenessVerified  Boolean     @default(false)
+
+  // AML screening
+  amlScreeningPassed Boolean    @default(false)
+  amlRiskLevel      RiskLevel?
+
+  // Timestamps
+  initiatedAt       DateTime    @default(now())
+  submittedAt       DateTime?
+  reviewedAt        DateTime?
+  expiresAt         DateTime?
+
+  @@index([sumsubApplicantId])
+  @@index([status])
+}
+
+model WalletVerification {
+  id                String                   @id @default(cuid())
+  userId            String
+  user              User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  walletAddress     String
+  chainId           Int
+
+  // Ownership verification
+  signatureMessage  String?
+  signatureHash     String?
+  ownershipVerified Boolean                  @default(false)
+  ownershipVerifiedAt DateTime?
+
+  // Chainalysis screening
+  status            WalletVerificationStatus @default(PENDING)
+  riskLevel         RiskLevel?
+  screeningScore    Float?
+
+  // Screening flags
+  isSanctioned      Boolean                  @default(false)
+  isHighRisk        Boolean                  @default(false)
+  riskCategories    String[]                 // Array of risk categories
+
+  screenedAt        DateTime?
+  screeningExpires  DateTime?
+
+  // Raw Chainalysis response hash
+  rawResponseHash   String?
+
+  isPrimary         Boolean                  @default(false)
+
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+
+  @@unique([userId, walletAddress])
+  @@index([walletAddress])
+  @@index([status])
+}
+
+model SourceOfFundsDeclaration {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Declaration fields
+  primarySource     String    // Employment, Investment, Inheritance, etc.
+  secondarySources  String[]
+  employerName      String?
+  occupation        String?
+  estimatedNetWorth String?   // Range selection
+  expectedTradingVolume String? // Range selection
+
+  // Supporting documentation (optional)
+  hasDocumentation  Boolean   @default(false)
+  documentationNotes String?
+
+  // Sign-off
+  declarationText   String
+  signatureHash     String
+  signedAt          DateTime
+  ipAddress         String
+
+  // Review
+  isApproved        Boolean   @default(false)
+  reviewNotes       String?
+  reviewedAt        DateTime?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model RiskAcknowledgment {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Individual acknowledgments
+  acknowledgesVolatility       Boolean @default(false)
+  acknowledgesLiquidityRisk    Boolean @default(false)
+  acknowledgesRegulatoryRisk   Boolean @default(false)
+  acknowledgesNoInsurance      Boolean @default(false)
+  acknowledgesLossRisk         Boolean @default(false)
+  acknowledgesExperimental     Boolean @default(false)
+  acknowledgesRegSCompliance   Boolean @default(false)
+  acknowledgesTransferRestrictions Boolean @default(false)
+
+  // Full acknowledgment document
+  documentVersion   String    // Version of the acknowledgment document
+  documentHash      String    // Hash of the document for integrity
+
+  // Sign-off
+  signatureHash     String
+  signedAt          DateTime
+  ipAddress         String
+
+  createdAt         DateTime  @default(now())
+}
+
+model CompliancePeriod {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 40-day compliance period for Reg S
+  periodStartDate   DateTime
+  periodEndDate     DateTime
+  periodDays        Int       @default(40)
+
+  // Status
+  isActive          Boolean   @default(true)
+  isCompleted       Boolean   @default(false)
+  completedAt       DateTime?
+
+  // User acknowledgment of the period
+  acknowledgedAt    DateTime?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([periodEndDate])
+  @@index([isActive])
+}
+
+model AuditLog {
+  id                String      @id @default(cuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  action            AuditAction
+  details           String?     // JSON string with additional context
+  ipAddress         String?
+  userAgent         String?
+
+  // Reference to related entity
+  entityType        String?     // GeoVerification, KycVerification, etc.
+  entityId          String?
+
+  // Immutability (hash of previous log for chain integrity)
+  previousLogHash   String?
+  logHash           String
+
+  createdAt         DateTime    @default(now())
+
+  // Audit logs are immutable - no updatedAt
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model BlockedRegion {
+  id                String    @id @default(cuid())
+  countryCode       String    @unique
+  countryName       String
+  reason            String    // US_INVESTOR, SANCTIONED, etc.
+  isActive          Boolean   @default(true)
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([countryCode])
+  @@index([isActive])
+}
+
+model SumsubWebhook {
+  id                String    @id @default(cuid())
+
+  // Webhook data
+  webhookId         String    @unique
+  applicantId       String
+  eventType         String
+  reviewStatus      String?
+  reviewResult      String?   // JSON string
+
+  // Raw payload (encrypted)
+  rawPayload        String
+  signatureValid    Boolean
+
+  // Processing
+  processedAt       DateTime?
+  processingError   String?
+
+  receivedAt        DateTime  @default(now())
+
+  @@index([applicantId])
+  @@index([eventType])
+  @@index([receivedAt])
+}

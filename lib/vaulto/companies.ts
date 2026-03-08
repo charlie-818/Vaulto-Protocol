@@ -3,11 +3,14 @@ import type { DemoToken } from "@/lib/types/token";
 
 /** Individual funding round */
 export interface FundingRound {
-  date: string;
+  roundNumber?: number;
   type: string;
-  amountUsd: number;
-  leadInvestors: string[];
-  postMoneyValuationUsd?: number;
+  date: string;
+  amountRaisedUsd: number | null;
+  amountRaisedNote?: string | null;
+  preMoneyValuationUsd?: number | null;
+  postMoneyValuationUsd?: number | null;
+  pricePerShareUsd?: number | null;
 }
 
 /** Product offered by a company */

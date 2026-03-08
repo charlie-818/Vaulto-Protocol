@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { PrivateCompany } from "@/lib/vaulto/companies";
 import { formatValuation, formatPricePerShare, getSyntheticSymbol } from "@/lib/vaulto/companies";
 import { CompanyLogo } from "@/components/CompanyLogo";
 import { Sparkline } from "@/components/Sparkline";
+import { CompanyDetailModal } from "@/components/CompanyDetailModal";
 import { useSortableTable, type SortableColumn } from "@/hooks/useSortableTable";
 import { SortableTableHeader } from "@/components/SortableHeader";
 
@@ -15,6 +16,8 @@ type MintTableProps = {
 type ColumnKey = "company" | "valuation" | "funding" | "pricePerShare" | "token";
 
 export function MintTable({ companies }: MintTableProps) {
+  const [selectedCompany, setSelectedCompany] = useState<PrivateCompany | null>(null);
+
   const columns: SortableColumn<ColumnKey, PrivateCompany>[] = useMemo(
     () => [
       { key: "company", getValue: (c) => c.name },
@@ -37,7 +40,8 @@ export function MintTable({ companies }: MintTableProps) {
           return (
             <div
               key={company.id}
-              className="rounded-md border border-border bg-background p-4"
+              className="rounded-md border border-border bg-background p-4 cursor-pointer hover:bg-muted/30 transition-colors"
+              onClick={() => setSelectedCompany(company)}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -126,7 +130,8 @@ export function MintTable({ companies }: MintTableProps) {
               return (
                 <tr
                   key={company.id}
-                  className="border-b border-border last:border-0"
+                  className="border-b border-border last:border-0 cursor-pointer hover:bg-muted/30 transition-colors"
+                  onClick={() => setSelectedCompany(company)}
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
@@ -160,6 +165,14 @@ export function MintTable({ companies }: MintTableProps) {
           </tbody>
         </table>
       </div>
+
+      {/* Company Detail Modal */}
+      {selectedCompany && (
+        <CompanyDetailModal
+          company={selectedCompany}
+          onClose={() => setSelectedCompany(null)}
+        />
+      )}
     </>
   );
 }
