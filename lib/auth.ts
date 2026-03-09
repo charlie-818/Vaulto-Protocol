@@ -194,15 +194,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           try {
             const dbUser = await prisma.user.findUnique({
               where: { email: token.email as string },
-              select: { id: true, onboardingStatus: true },
+              select: { id: true, onboardingStatus: true, isVaultoEmployee: true },
             });
 
             if (dbUser) {
               token.userId = dbUser.id;
               token.onboardingStatus = dbUser.onboardingStatus;
+              // Always use database value for isVaultoEmployee to ensure consistency
+              token.isVaultoEmployee = dbUser.isVaultoEmployee;
               console.log("[Auth] JWT updated with user data:", {
                 userId: dbUser.id,
                 onboardingStatus: dbUser.onboardingStatus,
+                isVaultoEmployee: dbUser.isVaultoEmployee,
               });
             } else {
               console.warn("[Auth] User not found in database:", token.email);

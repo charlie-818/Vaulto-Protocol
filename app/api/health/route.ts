@@ -25,6 +25,8 @@ export async function GET() {
       ? "configured"
       : "NOT CONFIGURED",
     AUTH_SECRET: process.env.AUTH_SECRET ? "configured" : "NOT CONFIGURED",
+    AUTH_URL: process.env.AUTH_URL || "NOT CONFIGURED",
+    AUTH_TRUST_HOST: process.env.AUTH_TRUST_HOST || "NOT CONFIGURED",
   };
 
   // Check Prisma client
