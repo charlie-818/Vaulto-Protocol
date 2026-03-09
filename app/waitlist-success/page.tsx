@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { WaitlistSuccess } from "@/components/WaitlistSuccess";
+import { prisma } from "@/lib/prisma";
 
 export default async function WaitlistSuccessPage() {
   const session = await auth();
@@ -14,5 +15,25 @@ export default async function WaitlistSuccessPage() {
     redirect("/swap");
   }
 
-  return <WaitlistSuccess user={session.user} />;
+  // Fetch additional user data for leaderboard
+  let userData = null;
+  if (prisma && session.user.email) {
+    const dbUser = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: {
+        createdAt: true,
+        bonusPoints: true,
+        hasSharedToX: true,
+      },
+    });
+    if (dbUser) {
+      userData = {
+        createdAt: dbUser.createdAt.toISOString(),
+        bonusPoints: dbUser.bonusPoints,
+        hasSharedToX: dbUser.hasSharedToX,
+      };
+    }
+  }
+
+  return <WaitlistSuccess user={session.user} userData={userData} />;
 }

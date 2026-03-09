@@ -90,6 +90,11 @@ model User {
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
 
+  // Waitlist leaderboard fields
+  bonusPoints           Int                 @default(0)
+  hasSharedToX          Boolean             @default(false)
+  sharedToXAt           DateTime?
+
   // Relations
   geoVerifications      GeoVerification[]
   kycVerification       KycVerification?
@@ -101,6 +106,7 @@ model User {
 
   @@index([email])
   @@index([onboardingStatus])
+  @@index([createdAt])
 }
 
 model GeoVerification {

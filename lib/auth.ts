@@ -38,31 +38,33 @@ function isEdgeRuntime(): boolean {
   return typeof (globalThis as Record<string, unknown>).EdgeRuntime === "string";
 }
 
-// Global prisma accessor - set by prisma.ts when it initializes
-const globalForPrisma = globalThis as unknown as {
-  __vaulto_prisma?: PrismaClient | null;
-};
+// Lazy-loaded prisma client - only loaded when needed in Node.js runtime
+let _prismaModule: typeof import("@/lib/prisma") | null = null;
 
-// Get prisma client from global storage - returns null in Edge runtime
-function getPrisma(): PrismaClient | null {
+// Get prisma client - loads the module on first call in Node.js runtime
+async function getPrisma(): Promise<PrismaClient | null> {
   // Don't try to use prisma in Edge runtime
   if (isEdgeRuntime()) {
     return null;
   }
 
   if (!isDatabaseConfigured()) {
+    console.warn("[Auth] Database not configured");
     return null;
   }
 
-  // Check if prisma is available in global storage
-  if (globalForPrisma.__vaulto_prisma) {
-    return globalForPrisma.__vaulto_prisma;
+  try {
+    // Dynamically import prisma module if not already loaded
+    if (!_prismaModule) {
+      console.log("[Auth] Loading prisma module...");
+      _prismaModule = await import("@/lib/prisma");
+      console.log("[Auth] Prisma module loaded, client available:", !!_prismaModule.prisma);
+    }
+    return _prismaModule.prisma;
+  } catch (error) {
+    console.error("[Auth] Failed to load prisma module:", error);
+    return null;
   }
-
-  // Prisma not yet initialized - this can happen if auth callback runs
-  // before any API route that imports prisma
-  console.warn("[Auth] Prisma not yet initialized in global storage");
-  return null;
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -90,10 +92,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       console.log("[Auth] Sign-in callback triggered for:", user.email);
       console.log("[Auth] Database configured:", isDatabaseConfigured());
+      console.log("[Auth] NODE_ENV:", process.env.NODE_ENV);
 
       // Only try database operations if database is configured
       if (user.email && isDatabaseConfigured()) {
-        const prisma = getPrisma();
+        const prisma = await getPrisma();
         console.log("[Auth] Prisma client available:", !!prisma);
 
         if (prisma) {
@@ -141,6 +144,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               );
             }
           }
+        } else {
+          console.error("[Auth] Prisma client not available - user will not be saved to database");
         }
       } else {
         // Log why we're not saving to DB
@@ -170,7 +175,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         isDatabaseConfigured() &&
         (trigger === "signIn" || trigger === "update")
       ) {
-        const prisma = getPrisma();
+        const prisma = await getPrisma();
 
         if (prisma) {
           try {
