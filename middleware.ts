@@ -60,7 +60,11 @@ export default auth((req) => {
   if (isOnboardingRoute) {
     // If onboarding is disabled, redirect away from onboarding page
     if (pathname === "/onboarding" && !isOnboardingEnforcementEnabled()) {
-      return NextResponse.redirect(new URL("/swap", req.url));
+      // Vaulto employees go to platform, others to waitlist
+      if (session?.user?.isVaultoEmployee) {
+        return NextResponse.redirect(new URL("/swap", req.url));
+      }
+      return NextResponse.redirect(new URL("/waitlist-success", req.url));
     }
     // Only require authentication for onboarding page itself
     if (pathname === "/onboarding" && !session?.user) {
@@ -80,19 +84,11 @@ export default auth((req) => {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    // Vaulto employees bypass onboarding (for development/admin access)
-    if (session.user.isVaultoEmployee) {
-      // Continue to set geo cookie
-    } else if (isOnboardingEnforcementEnabled()) {
-      // Only enforce onboarding if database is configured
-      const onboardingStatus = session.user.onboardingStatus;
-
-      // If not started or not fully onboarded, redirect to onboarding
-      if (!onboardingStatus || !fullyOnboardedStatuses.includes(onboardingStatus)) {
-        return NextResponse.redirect(new URL("/onboarding", req.url));
-      }
+    // Only Vaulto employees (as designated in Supabase) can access the platform
+    if (!session.user.isVaultoEmployee) {
+      return NextResponse.redirect(new URL("/waitlist-success", req.url));
     }
-    // If onboarding enforcement is disabled, allow access
+    // Vaulto employees get full access - continue to set geo cookie
   }
 
   // Set geo cookie for client-side banner
