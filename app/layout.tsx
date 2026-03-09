@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import { Sidebar } from "@/components/Sidebar";
-import { ThemeSwitch } from "@/components/ThemeSwitch";
-import { ConnectWalletButton } from "@/components/ConnectWalletButton";
 import { Providers } from "@/components/Providers";
-import { Footer } from "@/components/Footer";
+import { PlatformShell } from "@/components/PlatformShell";
 import { GeoRestrictBanner } from "@/components/GeoRestrictBanner";
 import "./globals.css";
 
@@ -36,17 +33,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Providers>
           <GeoRestrictBanner />
-          <div className="flex min-h-screen flex-col">
-            <Sidebar />
-            <header className="fixed right-0 top-0 z-20 flex items-center gap-3 pr-6 pt-10 md:pt-14">
-              <ThemeSwitch />
-              <ConnectWalletButton />
-            </header>
-            <main className="ml-0 flex-1 p-8 pt-28 md:ml-48 md:pt-14">{children}</main>
-            <div className="md:ml-48">
-              <Footer />
-            </div>
-          </div>
+          <PlatformShell>{children}</PlatformShell>
         </Providers>
       </body>
     </html>

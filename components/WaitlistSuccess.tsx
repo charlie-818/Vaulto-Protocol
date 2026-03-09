@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { CurrentUserStats, WaitlistLeaderboard } from "./waitlist";
+import { TickProvider } from "@/hooks/waitlist";
 
 interface WaitlistSuccessProps {
   user: {
@@ -82,16 +83,13 @@ export function WaitlistSuccess({ user, userData }: WaitlistSuccessProps) {
 
         {/* Stats and Leaderboard */}
         {userData && (
-          <div className="animate-fade-in-up animation-delay-400 w-full space-y-6">
-            <CurrentUserStats />
-            <WaitlistLeaderboard />
-          </div>
+          <TickProvider>
+            <div className="animate-fade-in-up animation-delay-400 w-full space-y-6">
+              <CurrentUserStats />
+              <WaitlistLeaderboard />
+            </div>
+          </TickProvider>
         )}
-
-        {/* Subtle animated line */}
-        <div className="animate-fade-in-up animation-delay-400 mt-12 h-px w-32 overflow-hidden bg-[var(--border)]">
-          <div className="animate-shimmer h-full w-full bg-gradient-to-r from-transparent via-[var(--foreground)] to-transparent opacity-50" />
-        </div>
       </div>
     </div>
   );

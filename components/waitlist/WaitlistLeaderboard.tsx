@@ -1,11 +1,8 @@
 "use client";
 
+import { Fragment } from "react";
 import { useLeaderboard } from "@/hooks/waitlist";
 import { PointsCounter } from "./PointsCounter";
-
-function formatNumber(num: number): string {
-  return num.toLocaleString("en-US");
-}
 
 export function WaitlistLeaderboard() {
   const { leaderboard, totalUsers, isLoading, isError } = useLeaderboard();
@@ -76,9 +73,9 @@ export function WaitlistLeaderboard() {
                 user.rank > leaderboard[index - 1].rank + 1;
 
               return (
-                <>
+                <Fragment key={user.rank}>
                   {showDivider && (
-                    <tr key={`divider-${user.rank}`}>
+                    <tr>
                       <td
                         colSpan={3}
                         className="px-4 py-2 text-center text-xs text-[var(--muted)]"
@@ -88,7 +85,6 @@ export function WaitlistLeaderboard() {
                     </tr>
                   )}
                   <tr
-                    key={user.rank}
                     className={`border-b border-[var(--border)] last:border-0 transition-colors ${
                       user.isCurrentUser
                         ? "bg-blue-500/5"
@@ -106,7 +102,7 @@ export function WaitlistLeaderboard() {
                             : "text-[var(--foreground)]"
                         }
                       >
-                        {user.isCurrentUser ? "YOU" : user.maskedEmail}
+                        {user.isCurrentUser ? "YOU" : user.displayName}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -117,7 +113,7 @@ export function WaitlistLeaderboard() {
                       />
                     </td>
                   </tr>
-                </>
+                </Fragment>
               );
             })}
           </tbody>
@@ -132,17 +128,13 @@ export function WaitlistLeaderboard() {
             user.rank > leaderboard[index - 1].rank + 1;
 
           return (
-            <>
+            <Fragment key={user.rank}>
               {showDivider && (
-                <div
-                  key={`divider-${user.rank}`}
-                  className="py-2 text-center text-xs text-[var(--muted)]"
-                >
+                <div className="py-2 text-center text-xs text-[var(--muted)]">
                   ...
                 </div>
               )}
               <div
-                key={user.rank}
                 className={`flex items-center justify-between border-b border-[var(--border)] p-4 last:border-0 ${
                   user.isCurrentUser ? "bg-blue-500/5" : ""
                 }`}
@@ -158,7 +150,7 @@ export function WaitlistLeaderboard() {
                         : "text-[var(--foreground)]"
                     }
                   >
-                    {user.isCurrentUser ? "YOU" : user.maskedEmail}
+                    {user.isCurrentUser ? "YOU" : user.displayName}
                   </span>
                 </div>
                 <PointsCounter
@@ -167,7 +159,7 @@ export function WaitlistLeaderboard() {
                   className="text-sm text-[var(--foreground)]"
                 />
               </div>
-            </>
+            </Fragment>
           );
         })}
       </div>

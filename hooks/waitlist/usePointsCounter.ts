@@ -1,32 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
+import { useTick } from "./useTickContext";
 
 export function usePointsCounter(createdAt: Date | string, bonusPoints: number): number {
-  const [points, setPoints] = useState(() => {
+  const tick = useTick();
+
+  const points = useMemo(() => {
     const createdAtDate = typeof createdAt === "string" ? new Date(createdAt) : createdAt;
     const now = new Date();
     const timeBasedPoints = Math.floor((now.getTime() - createdAtDate.getTime()) / 1000);
     return timeBasedPoints + bonusPoints;
-  });
-
-  useEffect(() => {
-    const createdAtDate = typeof createdAt === "string" ? new Date(createdAt) : createdAt;
-
-    const updatePoints = () => {
-      const now = new Date();
-      const timeBasedPoints = Math.floor((now.getTime() - createdAtDate.getTime()) / 1000);
-      setPoints(timeBasedPoints + bonusPoints);
-    };
-
-    // Update immediately
-    updatePoints();
-
-    // Update every second
-    const interval = setInterval(updatePoints, 1000);
-
-    return () => clearInterval(interval);
-  }, [createdAt, bonusPoints]);
+  }, [createdAt, bonusPoints, tick]);
 
   return points;
 }

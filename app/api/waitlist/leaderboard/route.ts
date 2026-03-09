@@ -4,7 +4,7 @@ import { requireDatabase, getDb } from "@/lib/onboarding/db";
 
 export interface LeaderboardUser {
   rank: number;
-  maskedEmail: string;
+  displayName: string;
   points: number;
   bonusPoints: number;
   createdAt: string;
@@ -23,22 +23,20 @@ export interface LeaderboardResponse {
   totalUsers: number;
 }
 
-function maskEmail(email: string): string {
-  const [localPart, domain] = email.split("@");
-  if (!localPart || !domain) return "***@***";
+function formatDisplayName(name: string | null, email: string): string {
+  if (name) {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      const firstName = parts[0];
+      const lastInitial = parts[parts.length - 1][0]?.toUpperCase();
+      return `${firstName} ${lastInitial}.`;
+    }
+    return parts[0];
+  }
 
-  const maskedLocal =
-    localPart.length > 1
-      ? localPart[0] + "***"
-      : localPart[0] + "***";
-
-  const domainParts = domain.split(".");
-  const maskedDomain =
-    domainParts[0].length > 1
-      ? domainParts[0][0] + "***"
-      : domainParts[0] + "***";
-
-  return `${maskedLocal}@${maskedDomain}...`;
+  // Fallback to email prefix if no name
+  const emailPrefix = email.split("@")[0];
+  return emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1, 8);
 }
 
 function calculatePoints(createdAt: Date, bonusPoints: number): number {
@@ -69,6 +67,7 @@ export async function GET() {
       select: {
         id: true,
         email: true,
+        name: true,
         createdAt: true,
         bonusPoints: true,
         hasSharedToX: true,
@@ -99,7 +98,7 @@ export async function GET() {
       .slice(0, 50)
       .map((user, index) => ({
         rank: index + 1,
-        maskedEmail: maskEmail(user.email),
+        displayName: formatDisplayName(user.name, user.email),
         points: user.points,
         bonusPoints: user.bonusPoints,
         createdAt: user.createdAt.toISOString(),
@@ -110,7 +109,7 @@ export async function GET() {
     if (currentUserIndex >= 50 && currentUserData) {
       leaderboard.push({
         rank: currentUserIndex + 1,
-        maskedEmail: maskEmail(currentUserData.email),
+        displayName: formatDisplayName(currentUserData.name, currentUserData.email),
         points: currentUserData.points,
         bonusPoints: currentUserData.bonusPoints,
         createdAt: currentUserData.createdAt.toISOString(),
