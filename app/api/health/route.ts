@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   isDatabaseConfigured,
   testDatabaseConnection,
+  getDatabaseUrlDebugInfo,
   prisma,
 } from "@/lib/prisma";
 
@@ -31,6 +32,9 @@ export async function GET() {
     clientInitialized: !!prisma,
     databaseConfigured: isDatabaseConfigured(),
   };
+
+  // Add DATABASE_URL debug info (safe - doesn't expose credentials)
+  checks.databaseUrlDebug = getDatabaseUrlDebugInfo();
 
   // Test database connection
   if (isDatabaseConfigured() && prisma) {

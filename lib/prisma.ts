@@ -16,6 +16,45 @@ export function isDatabaseConfigured(): boolean {
   return !!(databaseUrl && databaseUrl.length > 0);
 }
 
+// Parse DATABASE_URL for debugging (hides password)
+export function getDatabaseUrlDebugInfo(): {
+  configured: boolean;
+  length?: number;
+  protocol?: string;
+  host?: string;
+  port?: string;
+  database?: string;
+  hasUser?: boolean;
+  hasPassword?: boolean;
+  parseError?: string;
+} {
+  const databaseUrl = process.env.DATABASE_URL;
+
+  if (!databaseUrl) {
+    return { configured: false };
+  }
+
+  try {
+    const url = new URL(databaseUrl);
+    return {
+      configured: true,
+      length: databaseUrl.length,
+      protocol: url.protocol,
+      host: url.hostname,
+      port: url.port || "default",
+      database: url.pathname.slice(1) || "default",
+      hasUser: !!url.username,
+      hasPassword: !!url.password,
+    };
+  } catch (error) {
+    return {
+      configured: true,
+      length: databaseUrl.length,
+      parseError: error instanceof Error ? error.message : "Failed to parse URL",
+    };
+  }
+}
+
 function createPrismaClient(): PrismaClient | null {
   const databaseUrl = process.env.DATABASE_URL;
 
