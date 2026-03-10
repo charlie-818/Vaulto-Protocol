@@ -15,25 +15,29 @@ function getRankStyles(rank: number): string {
 export function CurrentUserStats() {
   const { currentUser, isLoading, shareToX, isSharing } = useLeaderboard();
   const [copied, setCopied] = useState(false);
+  const [isSharePending, setIsSharePending] = useState(false);
 
   const handleShareReferral = useCallback(async () => {
-    if (!currentUser?.referralCode) return;
+    if (!currentUser?.referralCode || isSharePending) return;
 
     const referralUrl = `https://protocol.vaulto.ai?ref=${currentUser.referralCode}`;
 
     // Use native share on mobile if available
     if (navigator.share) {
       try {
+        setIsSharePending(true);
         await navigator.share({
           title: "Join Vaulto",
           text: "Join me on Vaulto and get early access to trade private company stocks!",
           url: referralUrl,
         });
       } catch (error) {
-        // User cancelled or share failed - ignore AbortError
-        if ((error as Error).name !== "AbortError") {
+        // User cancelled or share failed - ignore AbortError and InvalidStateError
+        if ((error as Error).name !== "AbortError" && (error as Error).name !== "InvalidStateError") {
           console.error("Share failed:", error);
         }
+      } finally {
+        setIsSharePending(false);
       }
     } else {
       // Fallback to clipboard for desktop
@@ -45,7 +49,7 @@ export function CurrentUserStats() {
         console.error("Failed to copy:", error);
       }
     }
-  }, [currentUser?.referralCode]);
+  }, [currentUser?.referralCode, isSharePending]);
 
   if (isLoading) {
     return (
