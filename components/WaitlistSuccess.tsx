@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { CurrentUserStats, WaitlistLeaderboard } from "./waitlist";
 import { TickProvider } from "@/hooks/waitlist";
 
@@ -24,6 +24,70 @@ const FLOATING_LOGOS = [
   { domain: "perplexity.ai", name: "Perplexity", size: 46, top: "88%", left: "25%", delay: "1.2s" },
   { domain: "anduril.com", name: "Anduril", size: 58, top: "90%", right: "22%", delay: "1.8s" },
 ];
+
+function FloatingLogo({
+  logo,
+  index,
+}: {
+  logo: (typeof FLOATING_LOGOS)[number];
+  index: number;
+}) {
+  const [priceChange, setPriceChange] = useState<number | null>(null);
+
+  const generateRandomChange = useCallback(() => {
+    // Random value between -0.5 and 3.0
+    return Math.random() * 3.5 - 0.5;
+  }, []);
+
+  const handleMouseEnter = () => {
+    setPriceChange(generateRandomChange());
+  };
+
+  const handleMouseLeave = () => {
+    setPriceChange(null);
+  };
+
+  const isPositive = priceChange !== null && priceChange >= 0;
+
+  return (
+    <div
+      className="group absolute animate-float-logo"
+      style={{
+        top: logo.top,
+        left: logo.left,
+        right: logo.right,
+        animationDelay: logo.delay,
+        animationDuration: `${8 + (index % 4) * 2}s`,
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="relative flex flex-col items-center">
+        <img
+          src={`https://www.google.com/s2/favicons?domain=${logo.domain}&sz=128`}
+          alt={logo.name}
+          className="rounded-full object-contain opacity-[0.06] transition-opacity duration-300 group-hover:opacity-80 dark:opacity-[0.04] sm:opacity-[0.15] sm:dark:opacity-[0.12]"
+          style={{ width: logo.size, height: logo.size }}
+        />
+        <div className="pointer-events-none absolute -bottom-10 flex flex-col items-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <span className="whitespace-nowrap text-xs font-bold text-white">
+            {logo.name}
+          </span>
+          {priceChange !== null && (
+            <span
+              className={`text-xs font-medium ${
+                isPositive ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {isPositive ? "+" : ""}
+              {priceChange.toFixed(2)}%
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface WaitlistSuccessProps {
   user: {
@@ -70,29 +134,7 @@ export function WaitlistSuccess({ user, userData }: WaitlistSuccessProps) {
       {/* Floating company logos */}
       <div className="fixed inset-0 overflow-hidden">
         {FLOATING_LOGOS.map((logo, index) => (
-          <div
-            key={logo.domain}
-            className="group absolute animate-float-logo"
-            style={{
-              top: logo.top,
-              left: logo.left,
-              right: logo.right,
-              animationDelay: logo.delay,
-              animationDuration: `${8 + (index % 4) * 2}s`,
-            }}
-          >
-            <div className="relative flex flex-col items-center">
-              <img
-                src={`https://www.google.com/s2/favicons?domain=${logo.domain}&sz=128`}
-                alt={logo.name}
-                className="rounded-full object-contain opacity-[0.06] transition-opacity duration-300 group-hover:opacity-80 dark:opacity-[0.04] sm:opacity-[0.15] sm:dark:opacity-[0.12]"
-                style={{ width: logo.size, height: logo.size }}
-              />
-              <span className="pointer-events-none absolute -bottom-6 whitespace-nowrap text-xs font-bold text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                {logo.name}
-              </span>
-            </div>
-          </div>
+          <FloatingLogo key={logo.domain} logo={logo} index={index} />
         ))}
       </div>
 
