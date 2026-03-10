@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { CurrentUserStats, WaitlistLeaderboard } from "./waitlist";
 import { TickProvider } from "@/hooks/waitlist";
 
@@ -32,7 +32,16 @@ function FloatingLogo({
   logo: (typeof FLOATING_LOGOS)[number];
   index: number;
 }) {
-  const [priceChange, setPriceChange] = useState(() => Math.random() * 3.5 - 0.5);
+  const [priceChange, setPriceChange] = useState(1.5); // Consistent initial value for SSR
+  const hasMounted = useRef(false);
+
+  useEffect(() => {
+    // Set random value only after mount to avoid hydration mismatch
+    if (!hasMounted.current) {
+      setPriceChange(Math.random() * 3.5 - 0.5);
+      hasMounted.current = true;
+    }
+  }, []);
 
   const handleMouseEnter = () => {
     // Generate new random value on each hover
