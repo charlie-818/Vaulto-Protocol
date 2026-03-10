@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { LegalLink } from "./LegalLink";
 
 const nav = [
   { href: "/mint", label: "Mint" },
@@ -107,22 +108,18 @@ export function Sidebar() {
         })}
       </nav>
       <div className="border-t border-border p-3">
-        <a
-          href="https://legal.vaulto.ai/privacy-policy"
-          target="_blank"
-          rel="noopener noreferrer"
+        <LegalLink
+          type="privacy"
           className="block py-1.5 text-xs text-muted transition-opacity hover:opacity-90"
         >
           Privacy Policy
-        </a>
-        <a
-          href="https://legal.vaulto.ai/terms-of-service"
-          target="_blank"
-          rel="noopener noreferrer"
+        </LegalLink>
+        <LegalLink
+          type="terms"
           className="block py-1.5 text-xs text-muted transition-opacity hover:opacity-90"
         >
           Terms of Service
-        </a>
+        </LegalLink>
         <a
           href="https://api.vaulto.ai/docs"
           target="_blank"
