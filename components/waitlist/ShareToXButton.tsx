@@ -6,34 +6,41 @@ interface ShareToXButtonProps {
   hasShared: boolean;
   onShare: () => void;
   isSharing: boolean;
+  /** User's referral code – when set, the shared link includes ?ref= so signups award 250k pts */
+  referralCode?: string | null;
   /** Compact styling for mobile (similar size to Earn 250k button) */
   minimal?: boolean;
 }
 
-const TWEET_TEXT = `I just joined the @VaultoProtocol waitlist!
+const TWEET_PREFIX = `I just joined the @VaultoProtocol waitlist!
 
 Vaulto is building the future of private market investing - trade pre-IPO companies like SpaceX, OpenAI, and Stripe.
 
 Join me on the waitlist and earn points while you wait
-https://vaulto.ai`;
+`;
 
 export function ShareToXButton({
   hasShared,
   onShare,
   isSharing,
+  referralCode,
   minimal = false,
 }: ShareToXButtonProps) {
   const [justShared, setJustShared] = useState(false);
 
   const handleShare = useCallback(() => {
-    // Open X intent
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(TWEET_TEXT)}`;
+    const shareUrl = referralCode
+      ? `https://protocol.vaulto.ai?ref=${encodeURIComponent(referralCode)}`
+      : "https://protocol.vaulto.ai";
+    const tweetText = TWEET_PREFIX + shareUrl;
+
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
     window.open(tweetUrl, "_blank", "width=550,height=420");
 
     // Record share in backend
     onShare();
     setJustShared(true);
-  }, [onShare]);
+  }, [onShare, referralCode]);
 
   if (hasShared || justShared) {
     return null;

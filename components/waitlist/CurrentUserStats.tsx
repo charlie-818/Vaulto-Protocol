@@ -82,6 +82,7 @@ export function CurrentUserStats() {
               hasShared={currentUser.hasSharedToX}
               onShare={shareToX}
               isSharing={isSharing}
+              referralCode={currentUser.referralCode}
               minimal
             />
           </div>
@@ -141,6 +142,7 @@ export function CurrentUserStats() {
             hasShared={currentUser.hasSharedToX}
             onShare={shareToX}
             isSharing={isSharing}
+            referralCode={currentUser.referralCode}
           />
           {(currentUser.referralCode || currentUser.hasSharedToX) && (
             <div className="flex flex-col items-center justify-center gap-1">
