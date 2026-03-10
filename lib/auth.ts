@@ -131,6 +131,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               },
             });
 
+            // Ensure user has a referral code (new users and backfill)
+            if (!savedUser.referralCode) {
+              const { generateReferralCode } = await import("@/lib/referral-code");
+              for (let attempt = 0; attempt < 10; attempt++) {
+                const code = generateReferralCode();
+                const existing = await prisma.user.findUnique({
+                  where: { referralCode: code },
+                  select: { id: true },
+                });
+                if (!existing) {
+                  await prisma.user.update({
+                    where: { id: savedUser.id },
+                    data: { referralCode: code },
+                  });
+                  break;
+                }
+              }
+            }
+
             console.log(
               "[Auth] User saved successfully:",
               JSON.stringify({

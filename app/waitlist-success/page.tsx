@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { WaitlistSuccess } from "@/components/WaitlistSuccess";
 import { prisma } from "@/lib/prisma";
 
@@ -14,6 +15,10 @@ export default async function WaitlistSuccessPage() {
   if (session.user.isVaultoEmployee) {
     redirect("/swap");
   }
+
+  // Read referral code from cookie (set when user landed on /?ref= before signup)
+  const cookieStore = await cookies();
+  const pendingReferralCode = cookieStore.get("waitlist_ref")?.value ?? null;
 
   // Fetch additional user data for leaderboard
   let userData = null;
@@ -35,5 +40,11 @@ export default async function WaitlistSuccessPage() {
     }
   }
 
-  return <WaitlistSuccess user={session.user} userData={userData} />;
+  return (
+    <WaitlistSuccess
+      user={session.user}
+      userData={userData}
+      pendingReferralCode={pendingReferralCode}
+    />
+  );
 }

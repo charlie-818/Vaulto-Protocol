@@ -98,9 +98,14 @@ interface WaitlistSuccessProps {
     bonusPoints: number;
     hasSharedToX: boolean;
   } | null;
+  pendingReferralCode?: string | null;
 }
 
-export function WaitlistSuccess({ user, userData }: WaitlistSuccessProps) {
+export function WaitlistSuccess({
+  user,
+  userData,
+  pendingReferralCode,
+}: WaitlistSuccessProps) {
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -119,6 +124,29 @@ export function WaitlistSuccess({ user, userData }: WaitlistSuccessProps) {
 
     return () => observer.disconnect();
   }, []);
+
+  // Process referral code from cookie (user signed up via ?ref= link)
+  useEffect(() => {
+    if (!pendingReferralCode) return;
+
+    const apply = async () => {
+      try {
+        const res = await fetch("/api/waitlist/process-referral", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ referralCode: pendingReferralCode }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.cookie =
+            "waitlist_ref=; path=/; max-age=0; SameSite=Lax";
+        }
+      } catch {
+        // Keep cookie so we can retry
+      }
+    };
+    apply();
+  }, [pendingReferralCode]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center overflow-y-auto bg-[var(--background)]">

@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "postinstall": "prisma generate",
-    "migrate:companies": "npx tsx scripts/migrate-companies.ts"
+    "migrate:companies": "npx tsx scripts/migrate-companies.ts",
+    "backfill:referral-codes": "npx tsx scripts/backfill-referral-codes.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.2",

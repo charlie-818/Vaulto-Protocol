@@ -74,8 +74,18 @@ export function CurrentUserStats() {
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6">
-      {/* Mobile Layout */}
-      <div className="flex flex-col gap-4 sm:hidden">
+      {/* Mobile: minimal Share to X above, then Earn 250k row */}
+      <div className="flex flex-col gap-3 sm:hidden">
+        {!currentUser.hasSharedToX && (
+          <div className="flex justify-end">
+            <ShareToXButton
+              hasShared={currentUser.hasSharedToX}
+              onShare={shareToX}
+              isSharing={isSharing}
+              minimal
+            />
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <div className="flex gap-6">
             <div>
@@ -105,16 +115,9 @@ export function CurrentUserStats() {
             Earn 250k
           </button>
         </div>
-        <div className="flex justify-center">
-          <ShareToXButton
-            hasShared={currentUser.hasSharedToX}
-            onShare={shareToX}
-            isSharing={isSharing}
-          />
-        </div>
       </div>
 
-      {/* Desktop Layout */}
+      {/* Desktop: X first, then Invite Friends after verified */}
       <div className="hidden sm:flex sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-10">
           <div>
@@ -134,7 +137,12 @@ export function CurrentUserStats() {
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-2">
-          {currentUser.referralCode && (
+          <ShareToXButton
+            hasShared={currentUser.hasSharedToX}
+            onShare={shareToX}
+            isSharing={isSharing}
+          />
+          {(currentUser.referralCode || currentUser.hasSharedToX) && (
             <div className="flex flex-col items-center justify-center gap-1">
               <span className="text-xs text-[var(--muted)]">
                 Earn <span className="font-semibold text-purple-500">250,000 pts</span>
@@ -164,11 +172,6 @@ export function CurrentUserStats() {
               </span>
             </div>
           )}
-          <ShareToXButton
-            hasShared={currentUser.hasSharedToX}
-            onShare={shareToX}
-            isSharing={isSharing}
-          />
         </div>
       </div>
     </div>

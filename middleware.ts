@@ -91,8 +91,22 @@ export default auth((req) => {
     // Vaulto employees get full access - continue to set geo cookie
   }
 
-  // Set geo cookie for client-side banner
+  // Set referral cookie when visiting home with ?ref= (for waitlist signup)
   const response = NextResponse.next();
+  if (pathname === "/" || pathname === "") {
+    const ref = req.nextUrl.searchParams.get("ref");
+    if (ref && /^[A-Za-z0-9]{1,20}$/.test(ref)) {
+      response.cookies.set("waitlist_ref", ref.toUpperCase(), {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24, // 24h
+        path: "/",
+      });
+    }
+  }
+
+  // Set geo cookie for client-side banner
   let country = getCountryFromRequest(req);
 
   // In development, check for ?geo= query param to simulate geo
