@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { CurrentUserStats, WaitlistLeaderboard } from "./waitlist";
 import { TickProvider } from "@/hooks/waitlist";
 
@@ -32,22 +32,14 @@ function FloatingLogo({
   logo: (typeof FLOATING_LOGOS)[number];
   index: number;
 }) {
-  const [priceChange, setPriceChange] = useState<number | null>(null);
-
-  const generateRandomChange = useCallback(() => {
-    // Random value between -0.5 and 3.0
-    return Math.random() * 3.5 - 0.5;
-  }, []);
+  const [priceChange, setPriceChange] = useState(() => Math.random() * 3.5 - 0.5);
 
   const handleMouseEnter = () => {
-    setPriceChange(generateRandomChange());
+    // Generate new random value on each hover
+    setPriceChange(Math.random() * 3.5 - 0.5);
   };
 
-  const handleMouseLeave = () => {
-    setPriceChange(null);
-  };
-
-  const isPositive = priceChange !== null && priceChange >= 0;
+  const isPositive = priceChange >= 0;
 
   return (
     <div
@@ -60,7 +52,6 @@ function FloatingLogo({
         animationDuration: `${8 + (index % 4) * 2}s`,
       }}
       onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <div className="relative flex flex-col items-center">
         <img
@@ -73,16 +64,14 @@ function FloatingLogo({
           <span className="whitespace-nowrap text-xs font-bold text-white">
             {logo.name}
           </span>
-          {priceChange !== null && (
-            <span
-              className={`text-xs font-medium ${
-                isPositive ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {isPositive ? "+" : ""}
-              {priceChange.toFixed(2)}%
-            </span>
-          )}
+          <span
+            className={`text-xs font-medium ${
+              isPositive ? "text-green-500" : "text-red-500"
+            }`}
+          >
+            {isPositive ? "+" : ""}
+            {priceChange.toFixed(2)}%
+          </span>
         </div>
       </div>
     </div>
