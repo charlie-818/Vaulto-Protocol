@@ -128,6 +128,14 @@ export function Sidebar() {
         >
           API Docs
         </a>
+        <a
+          href="https://discord.gg/wxXsxm7GGb"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block py-1.5 text-xs text-muted transition-opacity hover:opacity-90"
+        >
+          Support
+        </a>
       </div>
     </aside>
     </>
