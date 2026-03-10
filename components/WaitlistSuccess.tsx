@@ -11,18 +11,18 @@ const FLOATING_LOGOS = [
   { domain: "spacex.com", name: "SpaceX", size: 64, top: "5%", left: "3%", delay: "0s" },
   { domain: "openai.com", name: "OpenAI", size: 52, top: "28%", left: "6%", delay: "1s" },
   { domain: "databricks.com", name: "Databricks", size: 48, top: "52%", left: "4%", delay: "2s" },
-  { domain: "figma.com", name: "Figma", size: 56, top: "78%", left: "7%", delay: "0.8s" },
+  { domain: "figma.com", name: "Figma", size: 56, top: "78%", left: "7%", delay: "0.8s", hideOnMobile: true },
   // Right edge (staggered vertically with ~20% gaps)
   { domain: "stripe.com", name: "Stripe", size: 48, top: "8%", right: "4%", delay: "0.5s" },
   { domain: "anthropic.com", name: "Anthropic", size: 72, top: "32%", right: "3%", delay: "1.5s" },
   { domain: "discord.com", name: "Discord", size: 44, top: "58%", right: "5%", delay: "0.3s" },
-  { domain: "notion.so", name: "Notion", size: 50, top: "82%", right: "4%", delay: "1.3s" },
+  { domain: "notion.so", name: "Notion", size: 50, top: "82%", right: "4%", delay: "1.3s", hideOnMobile: true },
   // Top corners (spread horizontally)
-  { domain: "scale.com", name: "Scale AI", size: 40, top: "3%", left: "22%", delay: "0.2s" },
+  { domain: "scale.com", name: "Scale AI", size: 40, top: "3%", left: "22%", delay: "0.2s", hideOnMobile: true },
   { domain: "neuralink.com", name: "Neuralink", size: 44, top: "6%", right: "20%", delay: "0.7s" },
   // Bottom corners (spread horizontally)
-  { domain: "perplexity.ai", name: "Perplexity", size: 46, top: "88%", left: "25%", delay: "1.2s" },
-  { domain: "anduril.com", name: "Anduril", size: 58, top: "90%", right: "22%", delay: "1.8s" },
+  { domain: "perplexity.ai", name: "Perplexity", size: 46, top: "88%", left: "25%", delay: "1.2s", hideOnMobile: true },
+  { domain: "anduril.com", name: "Anduril", size: 58, top: "90%", right: "22%", delay: "1.8s", hideOnMobile: true },
 ];
 
 function MobileShareButton() {
@@ -107,7 +107,7 @@ function FloatingLogo({
 
   return (
     <div
-      className="group absolute animate-float-logo"
+      className={`group absolute animate-float-logo ${logo.hideOnMobile ? "hidden sm:block" : ""}`}
       style={{
         top: logo.top,
         left: logo.left,
