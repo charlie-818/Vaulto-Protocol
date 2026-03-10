@@ -72,7 +72,40 @@ export function CurrentUserStats() {
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Mobile Layout - single row */}
+      <div className="flex items-center justify-between sm:hidden">
+        <div className="flex gap-6">
+          <div>
+            <div className="text-xs text-[var(--muted)]">Rank</div>
+            <div className={`text-xl font-semibold ${getRankStyles(currentUser.rank)}`}>
+              #{currentUser.rank}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-[var(--muted)]">Points</div>
+            <div className="text-xl font-semibold text-[var(--foreground)]">
+              <PointsCounter
+                createdAt={currentUser.createdAt}
+                bonusPoints={currentUser.bonusPoints}
+              />
+            </div>
+          </div>
+        </div>
+        {currentUser.referralCode && (
+          <button
+            onClick={handleShareReferral}
+            className="inline-flex items-center justify-center gap-1 rounded-full bg-purple-500/10 px-3 py-1.5 text-xs font-semibold text-purple-500 transition-opacity active:opacity-70"
+          >
+            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" />
+            </svg>
+            Earn 250k
+          </button>
+        )}
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden sm:flex sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-10">
           <div>
             <div className="text-sm text-[var(--muted)]">Rank</div>
@@ -102,35 +135,15 @@ export function CurrentUserStats() {
               >
                 {copied ? (
                   <>
-                    <svg
-                      className="h-4 w-4 text-green-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
+                    <svg className="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     Copied!
                   </>
                 ) : (
                   <>
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"
-                      />
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" />
                     </svg>
                     Invite Friends
                   </>
