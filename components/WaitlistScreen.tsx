@@ -2,9 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, useCallback } from "react";
-
-// Open Google OAuth in external window/tab to avoid 403 "Disallowed user agent" from embedded browsers
-const GOOGLE_SIGNIN_URL = "/api/auth/signin/google?callbackUrl=%2Fwaitlist-success";
+import { signIn } from "next-auth/react";
 
 // User-agent patterns for in-app / embedded browsers (Google blocks OAuth in these)
 const EMBEDDED_BROWSER_PATTERNS =
@@ -168,10 +166,9 @@ export function WaitlistScreen() {
             </button>
           </form>
         ) : (
-          <a
-            href={GOOGLE_SIGNIN_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => signIn("google", { callbackUrl: "/waitlist-success" })}
             className="animate-fade-in-up animation-delay-500 group relative flex items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--background)] px-5 py-2.5 text-sm text-[var(--foreground)] transition-all duration-300 hover:border-[var(--foreground)]/20 hover:shadow-lg hover:shadow-purple-500/10"
           >
             <svg
@@ -198,7 +195,7 @@ export function WaitlistScreen() {
             </svg>
             <span className="font-medium">Sign up with Google</span>
             <div className="absolute inset-0 -z-10 rounded-lg bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-cyan-500/0 opacity-0 blur-xl transition-opacity duration-300 group-hover:from-blue-500/20 group-hover:via-purple-500/20 group-hover:to-cyan-500/20 group-hover:opacity-100" />
-          </a>
+          </button>
         )}
 
         {/* Subtle hint text */}
