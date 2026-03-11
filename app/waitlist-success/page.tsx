@@ -4,8 +4,24 @@ import { cookies } from "next/headers";
 import { WaitlistSuccess } from "@/components/WaitlistSuccess";
 import { prisma } from "@/lib/prisma";
 
-export default async function WaitlistSuccessPage() {
+type Props = { searchParams: Promise<{ from?: string; name?: string }> };
+
+export default async function WaitlistSuccessPage({ searchParams }: Props) {
   const session = await auth();
+  const params = await searchParams;
+  const fromEmail = params.from === "email";
+  const emailSignupFirstName = typeof params.name === "string" ? params.name.trim().slice(0, 100) : null;
+
+  if (fromEmail && !session?.user) {
+    return (
+      <WaitlistSuccess
+        user={null}
+        userData={null}
+        pendingReferralCode={null}
+        emailSignupFirstName={emailSignupFirstName || undefined}
+      />
+    );
+  }
 
   if (!session?.user) {
     redirect("/");

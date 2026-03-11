@@ -92,20 +92,24 @@ interface WaitlistSuccessProps {
     name?: string | null;
     email?: string | null;
     image?: string | null;
-  };
+  } | null;
   userData?: {
     createdAt: string;
     bonusPoints: number;
     hasSharedToX: boolean;
   } | null;
   pendingReferralCode?: string | null;
+  /** When set, render minimal "You're on the list" with first name only (no session). */
+  emailSignupFirstName?: string;
 }
 
 export function WaitlistSuccess({
   user,
   userData,
   pendingReferralCode,
+  emailSignupFirstName,
 }: WaitlistSuccessProps) {
+  const isEmailSignupMode = !!emailSignupFirstName && !user;
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -191,22 +195,33 @@ export function WaitlistSuccess({
         {/* Success message */}
         <h1 className="animate-fade-in-up animation-delay-200 mb-6 text-center text-3xl font-light text-[var(--foreground)] sm:text-4xl">
           You&apos;re on the list
+          {isEmailSignupMode && emailSignupFirstName ? (
+            <span className="block mt-1 text-2xl sm:text-3xl">, {emailSignupFirstName}</span>
+          ) : null}
         </h1>
 
-        <p className="animate-fade-in-up animation-delay-300 mb-8 max-w-md text-center text-[var(--muted)]">
-          We&apos;ll notify{" "}
-          <span className="text-[var(--foreground)]">{user.email}</span> when
-          Vaulto is ready.
-        </p>
+        {isEmailSignupMode ? (
+          <p className="animate-fade-in-up animation-delay-300 mb-8 max-w-md text-center text-[var(--muted)]">
+            We&apos;ll notify you when Vaulto is ready.
+          </p>
+        ) : (
+          <>
+            <p className="animate-fade-in-up animation-delay-300 mb-8 max-w-md text-center text-[var(--muted)]">
+              We&apos;ll notify{" "}
+              <span className="text-[var(--foreground)]">{user?.email}</span> when
+              Vaulto is ready.
+            </p>
 
-        {/* Stats and Leaderboard */}
-        {userData && (
-          <TickProvider>
-            <div className="animate-fade-in-up animation-delay-400 w-full space-y-6">
-              <CurrentUserStats />
-              <WaitlistLeaderboard />
-            </div>
-          </TickProvider>
+            {/* Stats and Leaderboard */}
+            {userData && (
+              <TickProvider>
+                <div className="animate-fade-in-up animation-delay-400 w-full space-y-6">
+                  <CurrentUserStats />
+                  <WaitlistLeaderboard />
+                </div>
+              </TickProvider>
+            )}
+          </>
         )}
       </div>
     </div>
