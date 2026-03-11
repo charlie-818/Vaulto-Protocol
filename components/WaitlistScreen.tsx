@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
+
+// Open Google OAuth in external window/tab to avoid 403 "Disallowed user agent" from embedded browsers
+const GOOGLE_SIGNIN_URL = "/api/auth/signin/google?callbackUrl=%2Fwaitlist-success";
 
 export function WaitlistScreen() {
   const [mounted, setMounted] = useState(false);
@@ -23,10 +25,6 @@ export function WaitlistScreen() {
 
     return () => observer.disconnect();
   }, []);
-
-  const handleGoogleSignUp = () => {
-    signIn("google", { callbackUrl: "/waitlist-success" });
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[var(--background)]">
@@ -78,10 +76,12 @@ export function WaitlistScreen() {
           Private Investing
         </h1>
 
-        {/* Google Sign Up Button */}
-        <button
-          onClick={handleGoogleSignUp}
-          className="animate-fade-in-up animation-delay-500 group relative flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--background)] px-5 py-2.5 text-sm text-[var(--foreground)] transition-all duration-300 hover:border-[var(--foreground)]/20 hover:shadow-lg hover:shadow-purple-500/10"
+        {/* Google Sign Up – link opens in new tab to avoid embedded browser 403 from Google */}
+        <a
+          href={GOOGLE_SIGNIN_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="animate-fade-in-up animation-delay-500 group relative flex items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--background)] px-5 py-2.5 text-sm text-[var(--foreground)] transition-all duration-300 hover:border-[var(--foreground)]/20 hover:shadow-lg hover:shadow-purple-500/10"
         >
           {/* Google Icon */}
           <svg
@@ -110,7 +110,7 @@ export function WaitlistScreen() {
 
           {/* Hover glow effect */}
           <div className="absolute inset-0 -z-10 rounded-lg bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-cyan-500/0 opacity-0 blur-xl transition-opacity duration-300 group-hover:from-blue-500/20 group-hover:via-purple-500/20 group-hover:to-cyan-500/20 group-hover:opacity-100" />
-        </button>
+        </a>
 
         {/* Subtle hint text */}
         <p className="animate-fade-in-up animation-delay-600 mt-6 text-sm text-[var(--muted)]">
